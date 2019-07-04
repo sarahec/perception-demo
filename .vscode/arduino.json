@@ -1,5 +1,5 @@
 {
-    "sketch": "arcada_pygamer_test.ino",
+    "sketch": "delay_demo.ino",
     "board": "adafruit:samd:adafruit_pygamer_m4",
     "port": "/dev/ttyACM0",
     "output": "../.build",
