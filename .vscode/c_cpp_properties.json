@@ -3,11 +3,19 @@
         {
             "name": "Linux",
             "includePath": [
-                "/home/sec/.arduino15/packages/adafruit/hardware/samd/1.5.1/**"
+                "/home/sec/.arduino15/packages/adafruit/hardware/samd/1.5.1/**",
+                "/home/sec/.arduino15/packages/arduino/tools/CMSIS-Atmel/1.2.0/CMSIS/Device/ATMEL/samd51/include",
+                "/home/sec/Arduino/libraries/**"
             ],
             "forcedInclude": [
                 "/home/sec/.arduino15/packages/adafruit/hardware/samd/1.5.1/cores/arduino/Arduino.h"
-            ]
+            ],
+            "defines": ["ARDUINO=189", "ADAFRUIT_PYGAMER_M4_EXPRESS"],
+            "intelliSenseMode": "gcc-x64",
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
         }
-    ]
+    ],
+    "version": 4
 }
