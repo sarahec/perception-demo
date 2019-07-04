@@ -5,8 +5,7 @@
 
 Adafruit_Arcada arcada;
 
-uint32_t buttons, last_buttons;
-uint32_t response_delay = 0;
+int32_t  response_delay = 0;
 
 // // Check the timer callback, this function is called every millisecond!
 // volatile uint16_t milliseconds = 0;
@@ -18,6 +17,31 @@ uint32_t response_delay = 0;
 //     milliseconds--;
 //   }
 // }
+
+void lightsOn() {
+    arcada.pixels.setPixelColor(0, 0x00ffff);
+    arcada.pixels.show();
+    
+}
+
+void lightsOff() {
+    arcada.pixels.setPixelColor(0, 0);
+    arcada.pixels.show();
+}
+
+
+void processButton(uint8_t buttonmask, int32_t timeChange) {
+  if (buttonmask & arcada.readButtons()) {
+    response_delay += timeChange;
+    if (response_delay < 0) response_delay = 0;
+    delay(response_delay);
+    lightsOn();
+    do {
+      delay(50);
+    } while (buttonmask & arcada.readButtons());
+    lightsOff();
+  }
+}
 
 void setup() {
   //while (!Serial);
@@ -39,8 +63,6 @@ void setup() {
 
   arcada.setCursor(0, 0);
   arcada.setTextWrap(true);
-
-  buttons = last_buttons = 0;
 
   // arcada.timerCallback(1000, timercallback);
 }
@@ -67,7 +89,6 @@ void loop() {
   // }
   // arcada.pixels.show();
 
-  uint8_t pressed_buttons = arcada.readButtons();
   
   // if (pressed_buttons & ARCADA_BUTTONMASK_A) {
   //   Serial.print("A");
@@ -77,29 +98,7 @@ void loop() {
   //   Serial.print("B");
   //   // arcada.drawCircle(120, 100, 10, ARCADA_WHITE);
   // }
-  if (pressed_buttons & ARCADA_BUTTONMASK_SELECT) {
-    delay(response_delay);
-    arcada.pixels.setPixelColor(0, 0x00ffff);
-    arcada.pixels.show();
-    delay(50);
-    arcada.pixels.setPixelColor(0, 0);
-    arcada.pixels.show();
-    response_delay += 5;
-    delay(50);
-    // arcada.drawRoundRect(60, 100, 20, 10, 5, ARCADA_WHITE);
-  }
-  if (pressed_buttons & ARCADA_BUTTONMASK_START) {
-    response_delay = response_delay > 25 ? response_delay - 25 : 0;
-    delay(response_delay);
-    arcada.pixels.setPixelColor(0, 0x00ffff);
-    arcada.pixels.show();
-    delay(50);
-    arcada.pixels.setPixelColor(0, 0);
-    arcada.pixels.show();
-    delay(50);
-  }
+  processButton(ARCADA_BUTTONMASK_SELECT, 5);
+  processButton(ARCADA_BUTTONMASK_START, -75);
 
-  Serial.println();
-
-  last_buttons = buttons;
 }
