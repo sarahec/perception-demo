@@ -1,40 +1,35 @@
 #include <Adafruit_Arcada.h>
-// #include <Adafruit_QSPI.h>
-// #include <Adafruit_QSPI_Flash.h>
-// #include <Adafruit_SPIFlash.h>
+
+#define MIN_DELAY 75
+#define TARGET_DELAY 150
+#define DELAY_INCREMENT 2
+#define DELAY_DECREMENT -200
 
 Adafruit_Arcada arcada;
 
-int32_t  response_delay = 0;
-
-// // Check the timer callback, this function is called every millisecond!
-// volatile uint16_t milliseconds = 0;
-// void timercallback() {
-//   // analogWrite(13, milliseconds);  // pulse the LED
-//   if (milliseconds == 0) {
-//     milliseconds = 255;
-//   } else {
-//     milliseconds--;
-//   }
-// }
+int32_t  responseDelay = MIN_DELAY;
 
 void lightsOn() {
-    arcada.pixels.setPixelColor(0, 0x00ffff);
+    int32_t timePerLight = (TARGET_DELAY - MIN_DELAY) / ARCADA_NEOPIXEL_NUM;
+    int32_t delayOverMin = responseDelay - MIN_DELAY;
+    int32_t numLights = (delayOverMin / timePerLight) +1;
+    uint32_t color = responseDelay <= TARGET_DELAY ? 0x804040 : 0x00ff00;
+    arcada.pixels.fill(color, 0,  numLights);
     arcada.pixels.show();
     
 }
 
 void lightsOff() {
-    arcada.pixels.setPixelColor(0, 0);
+    arcada.pixels.fill();
     arcada.pixels.show();
 }
 
 
 void processButton(uint8_t buttonmask, int32_t timeChange) {
   if (buttonmask & arcada.readButtons()) {
-    response_delay += timeChange;
-    if (response_delay < 0) response_delay = 0;
-    delay(response_delay);
+    responseDelay += timeChange;
+    if (responseDelay < MIN_DELAY) responseDelay = MIN_DELAY;
+    if (responseDelay > 0) delay(responseDelay);
     lightsOn();
     do {
       delay(50);
@@ -63,42 +58,12 @@ void setup() {
 
   arcada.setCursor(0, 0);
   arcada.setTextWrap(true);
-
-  // arcada.timerCallback(1000, timercallback);
 }
 
 void loop() {
   delay(5);
-  // if (playsound) {
-  //   arcada.enableSpeaker(true);
-  //   play_tune(audio, sizeof(audio));
-  //   arcada.enableSpeaker(false);
-  // }
-    
- 
-  // Read battery
-  // arcada.setCursor(80, 50);
-  // arcada.setTextColor(ARCADA_WHITE);
-  // float vbat = arcada.readBatterySensor();
-  // Serial.print("Battery: "); Serial.print(vbat); Serial.println("V");
-  // arcada.print("Batt: "); arcada.print(vbat); arcada.println("V");
 
-  // Serial.printf("Drawing %d NeoPixels", arcada.pixels.numPixels());  
-  // for(int32_t i=0; i< arcada.pixels.numPixels(); i++) {
-  //    arcada.pixels.setPixelColor(i, Wheel(((i * 256 / arcada.pixels.numPixels()) + j*5) & 255));
-  // }
-  // arcada.pixels.show();
-
-  
-  // if (pressed_buttons & ARCADA_BUTTONMASK_A) {
-  //   Serial.print("A");
-  //   // arcada.drawCircle(145, 100, 10, ARCADA_WHITE);
-  // }
-  // if (pressed_buttons & ARCADA_BUTTONMASK_B) {
-  //   Serial.print("B");
-  //   // arcada.drawCircle(120, 100, 10, ARCADA_WHITE);
-  // }
-  processButton(ARCADA_BUTTONMASK_SELECT, 5);
-  processButton(ARCADA_BUTTONMASK_START, -75);
+  processButton(ARCADA_BUTTONMASK_SELECT, DELAY_INCREMENT);
+  processButton(ARCADA_BUTTONMASK_START, DELAY_DECREMENT);
 
 }
