@@ -1,0 +1,7 @@
+{
+    "sketch": "arcada_pygamer_test.ino",
+    "board": "adafruit:samd:adafruit_pygamer_m4",
+    "port": "/dev/ttyACM0",
+    "configuration": "cache=on,speed=120,opt=small,maxqspi=50,usbstack=arduino,debug=off",
+    "programmer": "AVRISP mkII"
+}

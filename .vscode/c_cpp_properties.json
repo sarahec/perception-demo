@@ -1,0 +1,13 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "/home/sec/.arduino15/packages/adafruit/hardware/samd/1.5.1/**"
+            ],
+            "forcedInclude": [
+                "/home/sec/.arduino15/packages/adafruit/hardware/samd/1.5.1/cores/arduino/Arduino.h"
+            ]
+        }
+    ]
+}
