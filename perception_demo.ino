@@ -100,11 +100,14 @@ void showScreen(Screen screen) {
     arcada.println("100ms perception demo");
     arcada.println();
     arcada.println("Press the yellow button to");
-    arcada.println("light the LEDs. Each press");
-    arcada.println("Will have a slightly");
-    arcada.print("longer delay by ");
+    arcada.println("light a LED.");
+    arcada.println();
+    arcada.println("Each press will have a");
+    arcada.print("longer delay (+");
     arcada.print(DELAY_INCREMENT);
-    arcada.println("ms");
+    arcada.println("ms)");
+    arcada.println("before turning on the");
+    arcada.println("light(s).");
     arcada.println();
     arcada.println("Try it now");
     break;
