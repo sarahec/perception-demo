@@ -9,12 +9,11 @@
 enum Screen
 {
   startup,
-  title,
+  reset,
   intro,
   increase,
   maxdelay,
-  decrease,
-  reset
+  decrease
 };
 
 Adafruit_Arcada arcada;
@@ -90,8 +89,9 @@ void showScreen(Screen screen) {
   
   switch (screen)
   {
-  case title:
-    arcada.println("100ms perception demo");
+  case reset:
+    arcada.println("Resetting...");
+    responseDelay = START_DELAY;
     animateLights();
     showScreen(intro);
     break;
@@ -103,22 +103,19 @@ void showScreen(Screen screen) {
     arcada.println("light a LED.");
     arcada.println();
     arcada.println("Each press will have a");
-    arcada.print("longer delay (+");
+    arcada.print("+");
     arcada.print(DELAY_INCREMENT);
-    arcada.println("ms)");
-    arcada.println("before turning on the");
-    arcada.println("light(s).");
+    arcada.println("ms longer delay before");
+    arcada.println("turning on the light.");
     arcada.println();
     arcada.println("Try it now");
     break;
 
   case increase:
     arcada.println("Keep pressing repeatedly");
-    arcada.println("until the bar fills in");
-    arcada.println("and the lights flash");
-    arcada.print("green (");
-    arcada.print(TARGET_DELAY);
-    arcada.println("ms delay).");
+    arcada.println("until the bar fills in.");
+    arcada.println();
+    arcada.println("Stop when the lights turn");
     arcada.println();
     arcada.println("Make sure to watch the");
     arcada.println("lights as you do this.");
@@ -126,6 +123,10 @@ void showScreen(Screen screen) {
 
   case maxdelay:
     arcada.println("Now pause for a moment.");
+    arcada.println();
+    arcada.print("The delay is ");
+    arcada.print(TARGET_DELAY);
+    arcada.print("ms.");
     arcada.println();
     arcada.println("When you're ready, we'll");
     arcada.println("take away the delay");
@@ -139,22 +140,14 @@ void showScreen(Screen screen) {
     arcada.println("Did you see it?");
     arcada.println();
     arcada.println("It may look like the");
-    arcada.println("light flashed before");
-    arcada.println("you knew your finger was");
-    arcada.println("moving.");
+    arcada.println("light went off before");
+    arcada.println("you lifted your finger.");
     arcada.println();
     arcada.println("How many tries before");
     arcada.println("the effect stops?");
     arcada.println();
     arcada.println("When done, press the red");
     arcada.println("button to reset");
-    break;
-  
-  case reset:
-    arcada.println("Resetting...");
-    delay(1000);
-    responseDelay = START_DELAY;
-    showScreen(title);
     break;
   }
 }
@@ -169,15 +162,15 @@ void setup() {
   }
   arcada.displayBegin();
 
+  arcada.fillScreen(ARCADA_LIGHTGREY);
   for (int i=0; i<250; i++) {
     arcada.setBacklight(i);
     delay(1);
   }
 
-  arcada.fillScreen(ARCADA_RED);
   delay(10);
 
-  showScreen(title);
+  showScreen(reset);
 }
 
 void loop() {
