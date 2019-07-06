@@ -82,15 +82,17 @@ void decrementDelay()
 void animateLights()
 {
   int i;
-  int ms = 50;
+  int ms = 25;
 
-  for (i = 1; i < ARCADA_NEOPIXEL_NUM; i++)
+  for (i = 1; i <= ARCADA_NEOPIXEL_NUM; i++)
   {
     delay(ms);
     arcada.pixels.fill(0xCCCCCC, 0, i);
     arcada.pixels.show();
   }
-  for (i = ARCADA_NEOPIXEL_NUM-1; i > 0; i--) {
+  delay(100 - ms);
+  for (i = ARCADA_NEOPIXEL_NUM; i > 0; i--)
+  {
     delay(ms);
     arcada.pixels.fill();
     arcada.pixels.fill(0xCCCCCC, 0, i);
@@ -115,7 +117,6 @@ void showScreen(Screen screen) {
   switch (screen)
   {
   case reset:
-    arcada.println("Resetting...");
     responseDelay = START_DELAY;
     animateLights();
     showScreen(intro);
