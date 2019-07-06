@@ -149,9 +149,8 @@ void showScreen(Screen screen) {
   case decrease:
     arcada.println("Did you see it?");
     arcada.println();
-    arcada.println("It may look like the");
-    arcada.println("light went off before");
-    arcada.println("you lifted your finger.");
+    arcada.println("The light went on before");
+    arcada.println("you touched the button.");
     arcada.println();
     arcada.println("How many tries before");
     arcada.println("the effect stops?");
