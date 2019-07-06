@@ -17,13 +17,28 @@ enum Screen
   intro,
   increase,
   maxdelay,
-  decrease
+  decrease,
+  konami
+};
+
+enum Konami
+{
+  none,
+  up1,
+  up2,
+  dn1,
+  dn2,
+  l1,
+  r1,
+  l2,
+  r2
 };
 
 Adafruit_Arcada arcada;
 
 int32_t  responseDelay = START_DELAY;
 Screen currentScreen = startup;
+Konami kState = none;
 
 void lightsOn() {
     int32_t timePerLight = (TARGET_DELAY - START_DELAY) / ARCADA_NEOPIXEL_NUM;
@@ -158,6 +173,85 @@ void showScreen(Screen screen) {
     arcada.println("When done, press the red");
     arcada.println("button to reset");
     break;
+
+  case konami:
+    arcada.println("I knew you would try that.");
+    delay(2500);
+    showScreen(reset);
+    break;
+  }
+}
+
+// Look for the Komani cheat code, but only on the joystick
+void checkKonami(uint8_t buttons)
+{
+  bool up = (buttons & ARCADA_BUTTONMASK_UP) || (arcada.readJoystickY() < -256);
+  bool down = (buttons & ARCADA_BUTTONMASK_DOWN) || (arcada.readJoystickY() > 256);
+  bool left = (buttons & ARCADA_BUTTONMASK_LEFT) || (arcada.readJoystickX() < -256);
+  bool right = (buttons & ARCADA_BUTTONMASK_RIGHT) || (arcada.readJoystickX() > 256);
+  bool neutral = !(up | down | left | right);
+
+  switch (kState)
+  {
+  case none:
+    if (up)
+      kState = up1;
+    break;
+
+  case up1:
+    if (down)
+      kState = dn1;
+    else if (!(up | neutral)) // check for the repeat
+      kState = none;
+    break;
+
+  case dn1:
+    if (up)
+      kState = up2;
+    else if (!(down | neutral))
+      kState = none;
+    break;
+
+  case up2:
+    if (down)
+      kState = dn2;
+    else if (!(up or neutral))
+      kState = none;
+    break;
+
+  case dn2:
+    if (left)
+      kState = l1;
+    else if (!(down | neutral))
+      kState = none;
+    break;
+
+  case l1:
+    if (right)
+      kState = r1;
+    else if (!(left | neutral))
+      kState = none;
+    break;
+
+  case r1:
+    if (left)
+      kState = l2;
+    else if (!(right | neutral))
+      kState = none;
+    break;
+
+  case l2:
+    if (right) {
+      kState = none;
+      if (buttons & ARCADA_BUTTONMASK_RIGHT)
+        showScreen(konami);
+    } else if (!(left | neutral))
+      kState = none;
+    break;
+
+  default:
+    kState = none;
+    break;
   }
 }
 
@@ -184,6 +278,8 @@ void loop() {
   uint32_t buttons;
 
   buttons = arcada.readButtons();
+
+  checkKonami(buttons);
 
   if (buttons & RESET_BUTTON)
   {
