@@ -175,6 +175,12 @@ void showScreen(Screen screen) {
     break;
 
   case konami:
+    arcada.fillScreen(ARCADA_BLUE);
+    arcada.println();
+    arcada.println();
+    arcada.println();
+    arcada.println();
+    arcada.println();
     arcada.println("I knew you would try that.");
     delay(2500);
     showScreen(reset);
@@ -185,10 +191,13 @@ void showScreen(Screen screen) {
 // Look for the Komani cheat code, but only on the joystick
 void checkKonami(uint8_t buttons)
 {
-  bool up = (buttons & ARCADA_BUTTONMASK_UP) || (arcada.readJoystickY() < -256);
-  bool down = (buttons & ARCADA_BUTTONMASK_DOWN) || (arcada.readJoystickY() > 256);
-  bool left = (buttons & ARCADA_BUTTONMASK_LEFT) || (arcada.readJoystickX() < -256);
-  bool right = (buttons & ARCADA_BUTTONMASK_RIGHT) || (arcada.readJoystickX() > 256);
+  int16_t x = arcada.readJoystickX();
+  int16_t y = arcada.readJoystickY();
+
+  bool up = (buttons & ARCADA_BUTTONMASK_UP) || (y < -256);
+  bool down = (buttons & ARCADA_BUTTONMASK_DOWN) || (y > 256);
+  bool left = (buttons & ARCADA_BUTTONMASK_LEFT) || (x < -256);
+  bool right = (buttons & ARCADA_BUTTONMASK_RIGHT) || (x > 256);
   bool neutral = !(up | down | left | right);
 
   switch (kState)
