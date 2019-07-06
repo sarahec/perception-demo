@@ -1,10 +1,14 @@
 #include <Adafruit_Arcada.h>
 
-#define MIN_DELAY 5
-#define START_DELAY 75
-#define TARGET_DELAY 175
-#define DELAY_INCREMENT 2
-#define DELAY_DECREMENT -200
+#define MIN_DELAY         5
+#define START_DELAY       75
+#define TARGET_DELAY      175
+#define DELAY_INCREMENT   2
+#define DELAY_DECREMENT   -200
+
+#define RESET_BUTTON      ARCADA_BUTTONMASK_A
+#define INCREMENT_BUTTON  ARCADA_BUTTONMASK_SELECT
+#define DECREMENT_BUTTON  ARCADA_BUTTONMASK_START
 
 enum Screen
 {
@@ -36,26 +40,32 @@ void lightsOff() {
 }
 
 
-bool processButton(uint8_t buttonmask, int32_t timeChange) {
-  if (!(buttonmask & arcada.readButtons()))
-    return false;
-  // We have the button
-  responseDelay += timeChange;
-  if (responseDelay > TARGET_DELAY)
-      responseDelay = TARGET_DELAY;
-  if (responseDelay < MIN_DELAY)
-    responseDelay = MIN_DELAY;
-  if (responseDelay > 0) 
+void showLightsWhile(uint8_t buttonmask) {
   delay(responseDelay);
   lightsOn();
   do {
-    delay(50);
+    delay(25);
   } while (buttonmask & arcada.readButtons());
   lightsOff();
-  return true;
 }
 
-void animateLights() {
+void incrementDelay()
+{
+  responseDelay += DELAY_INCREMENT;
+  if (responseDelay > TARGET_DELAY)
+    responseDelay = TARGET_DELAY;
+  showLightsWhile(INCREMENT_BUTTON);
+}
+
+void decrementDelay()
+{
+  responseDelay -= DELAY_INCREMENT;
+  responseDelay = MIN_DELAY;
+  showLightsWhile(DECREMENT_BUTTON);
+}
+
+void animateLights()
+{
   int i;
   int ms = 50;
 
@@ -168,22 +178,23 @@ void setup() {
     delay(1);
   }
 
-  delay(10);
-
   showScreen(reset);
 }
 
 void loop() {
-  delay(5);
+  uint32_t buttons;
 
-  if (arcada.readButtons() & ARCADA_BUTTONMASK_A)
+  buttons = arcada.readButtons();
+
+  if (buttons & RESET_BUTTON)
   {
     showScreen(reset);
   }
 
   // Run the up button as many times as needed
-  if (processButton(ARCADA_BUTTONMASK_SELECT, DELAY_INCREMENT) & currentScreen < maxdelay)
+  if ((buttons & INCREMENT_BUTTON) && (currentScreen < maxdelay))
   {
+    incrementDelay();
     if (responseDelay < TARGET_DELAY)
     {
       showScreen(increase);
@@ -194,8 +205,11 @@ void loop() {
 
 
   // Run the down button as many times as needed
-  if (processButton(ARCADA_BUTTONMASK_START, DELAY_DECREMENT) & currentScreen >= maxdelay) 
+  if ((buttons & DECREMENT_BUTTON) && (currentScreen >= maxdelay)) 
   {
+    decrementDelay();
     showScreen(decrease);
   }
+
+  delay(10);
 }
